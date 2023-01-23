@@ -55,10 +55,18 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::pair<Point, Point>> lines;
     lines.push_back(std::make_pair(Point(370, 140), Point(140, 280)));
+
     lines.push_back(std::make_pair(Point(620, 200), Point(730, 240)));
     lines.push_back(std::make_pair(Point(730, 240), Point(680, 120)));
     lines.push_back(std::make_pair(Point(680, 120), Point(600, 130)));
     lines.push_back(std::make_pair(Point(600, 130), Point(620, 200)));
+
+    lines.push_back(std::make_pair(Point(300, 620), Point(620, 670)));
+    lines.push_back(std::make_pair(Point(300, 620), Point(200, 470)));
+
+    lines.push_back(std::make_pair(Point(1024, 420), Point(1004, 200)));
+    lines.push_back(std::make_pair(Point(1004, 200), Point(1200, 450)));
+    lines.push_back(std::make_pair(Point(1200, 450), Point(1024, 420)));
 
     SDL_Event e;
     bool quit = false;
