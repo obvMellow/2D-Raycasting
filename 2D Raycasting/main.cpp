@@ -19,6 +19,10 @@ Point lineIntersection(double x1, double y1, double x2, double y2, double x3, do
         double y = (((x1 * y2 - y1 * x2) * (y3 - y4)) - ((y1 - y2) * (x3 * y4 - y3 * x4))) / denominator;
         intersection.set_x(x);
         intersection.set_y(y);
+        if (x < fmin(x1, x2) || x > fmax(x1, x2) || y < fmin(y1, y2) || y > fmax(y1, y2) || x < fmin(x3, x4) || x > fmax(x3, x4) || y < fmin(y3, y4) || y > fmax(y3, y4)) {
+            intersection.set_x(NAN);
+            intersection.set_y(NAN);
+        }
     }
     return intersection;
 }
@@ -33,7 +37,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("Raycasting Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Raycasting Example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
     if (window == NULL) {
         printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
         return 1;
@@ -46,7 +50,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::vector<std::pair<Point, Point>> lines;
-    lines.push_back(std::make_pair(Point(120, 120), Point(240, 360)));
+    lines.push_back(std::make_pair(Point(370, 140), Point(140, 280)));
 
     SDL_Event e;
     bool quit = false;
