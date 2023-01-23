@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <iostream>
 #include <cmath>
 #include <stdio.h>
 #include <vector>
@@ -7,7 +8,10 @@
 const int screenWidth = 1280;
 const int screenHeight = 720;
 
-Point lineIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+// Higher the value, less intense the rays
+float intensity = 2.0f;
+
+Point line_intersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
     Point intersection;
     double denominator = ((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4));
     if (denominator == 0) {
@@ -27,7 +31,7 @@ Point lineIntersection(double x1, double y1, double x2, double y2, double x3, do
     return intersection;
 }
 
-void drawLine(SDL_Renderer* renderer, std::pair<Point, Point> line) {
+void draw_line(SDL_Renderer* renderer, std::pair<Point, Point> line) {
     SDL_RenderDrawLine(renderer, line.first.get_x(), line.first.get_y(), line.second.get_x(), line.second.get_y());
 }
 
@@ -51,6 +55,10 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::pair<Point, Point>> lines;
     lines.push_back(std::make_pair(Point(370, 140), Point(140, 280)));
+    lines.push_back(std::make_pair(Point(620, 200), Point(730, 240)));
+    lines.push_back(std::make_pair(Point(730, 240), Point(680, 120)));
+    lines.push_back(std::make_pair(Point(680, 120), Point(600, 130)));
+    lines.push_back(std::make_pair(Point(600, 130), Point(620, 200)));
 
     SDL_Event e;
     bool quit = false;
@@ -58,12 +66,23 @@ int main(int argc, char* argv[]) {
 
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = true;
-            }
-            else if (e.type == SDL_MOUSEMOTION) {
-                mouseX = e.motion.x;
-                mouseY = e.motion.y;
+            switch (e.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                case SDL_MOUSEMOTION:
+                    mouseX = e.motion.x;
+                    mouseY = e.motion.y;
+                    break;
+                case SDL_KEYDOWN:
+                    if (e.key.keysym.sym == SDLK_w) {
+                        intensity -= 0.1f;
+                        std::cout << intensity << "\n";
+                    }
+                    else if (e.key.keysym.sym == SDLK_s) {
+                        intensity += 0.1f;
+                        std::cout << intensity << "\n";
+                    }
             }
         }
 
@@ -72,14 +91,14 @@ int main(int argc, char* argv[]) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
 
         for (int i = 0; i < 360; i++) {
-            float angle = (float)i * (M_PI / 180.0f);
+            float angle = (float)i * (M_PI / 180.0f) * intensity;
             int x2 = mouseX + cos(angle) * screenWidth * 2;
             int y2 = mouseY + sin(angle) * screenHeight * 2;
 
             for (auto& line : lines) {
-                drawLine(renderer, line);
+                draw_line(renderer, line);
 
-                Point intersection = lineIntersection(mouseX, mouseY, x2, y2, line.first.get_x(), line.first.get_y(), line.second.get_x(), line.second.get_y());
+                Point intersection = line_intersection(mouseX, mouseY, x2, y2, line.first.get_x(), line.first.get_y(), line.second.get_x(), line.second.get_y());
                 if (!std::isnan(intersection.get_x()) && !std::isnan(intersection.get_y())) {
                     x2 = intersection.get_x();
                     y2 = intersection.get_y();
